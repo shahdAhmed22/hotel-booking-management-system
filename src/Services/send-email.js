@@ -1,6 +1,7 @@
 import nanomailer from "nodemailer"
 
-
+//src email=>udemy
+//destination email=>shahd
 
 const sendmailservice=async({ to = '', subject = 'no-reply', message = '<h1>Hello in our hotel</h1>', attachments = [] })=>{
     const transporter=nanomailer.createTransport({
@@ -14,7 +15,7 @@ const sendmailservice=async({ to = '', subject = 'no-reply', message = '<h1>Hell
         }
     })
     const info = await transporter.sendMail({
-        from: `"hotel" <${process.env.EMAIL}>`, 
+        from: `"Royal Haven" <${process.env.EMAIL}>`, 
         to, 
         subject,  
         html:message, 
