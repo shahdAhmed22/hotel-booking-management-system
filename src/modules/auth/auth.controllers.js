@@ -20,10 +20,10 @@ export const register=async(req,res)=>{
     const isEmailExists=await User.findOne({email}) 
     if(isEmailExists)
         return res.status(409).json({message:"email is already exists"})
-    const verificationToken =jwt.sign({email},"verification_token",{expiresIn:"1d"})
+    const verificationToken =jwt.sign({email},process.env.Verification_signature,{expiresIn:"1d"})
     const isEmailSent=await sendmailservice({ to : email, 
         subject : 'please verify your email',
-        message : verificationEmailTemplete.replace("[Guest Name]",username).replace("[Verification Link]",verificationToken) })
+        message : verificationEmailTemplete.replace("[Guest Name]",username).replace("[Verification Link]",`${req.protocol}://${req.headers.host}/user/verifiy-email/${verificationToken}`) })
     if(!isEmailSent){
         return res.status(500).json({message:"error occurs in sending verification email"})
     }
@@ -32,4 +32,4 @@ export const register=async(req,res)=>{
     user=user.toObject()
     delete user.password
     return res.status(201).json({message:"user created successfully",user})
-}
+} 
