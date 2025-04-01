@@ -8,7 +8,7 @@ export const auth=(authRoles=Object.values(systemRoles))=>{
             if(!accessToken){
                 return res.status(404).json("please login first")
             }
-            const decodedData=jwt.decode(accessToken,process.env.Verification_signature)
+            const decodedData=jwt.decode(accessToken,process.env.access_token_signature)
             if(!decodedData||!decodedData.id){
                 return res.status(400).json({message:"invalied token payload"})
             }

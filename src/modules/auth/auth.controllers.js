@@ -51,3 +51,19 @@ export const verifiyEmail=async(req,res,next)=>{
     }
     res.status(200).json({meassage:"user verified successfully"})
 }
+
+export const login=async(req,res,next)=>{
+    const {email,password}=req.body
+    if(!email||!password){
+        return res.status(404).json({message:"please provide email and password"})
+    }
+    const user=await User.findOne({email})
+    if(!user)
+        return res.status(404).json({message:"invalid credientials"})
+    const isPasswordMatch=bcrypt.compareSync(password,user.password)
+    if(!isPasswordMatch)
+        return res.status(404).json({message:"invalid credientials"})
+    const accessToken=jwt.sign({id:user._id},process.env.access_token_signature,{expiresIn:"1d"})
+    const refreshToken=jwt.sign({id:user._id},process.env.refresh_token_signature,{expiresIn:"7d"})
+    return res.status(200).json({message:"user logined sucessfully",accessToken,refreshToken})
+}
