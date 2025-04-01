@@ -90,7 +90,7 @@ export const forgetpassword=async(req,res,next)=>{
     const isEmailSent=await sendmailservice({ 
         to : email, 
         subject : 'forget password request',
-        message : forgetPasswordEmailTemplete.replace("[User Name]",user.username).replace("[Reset Password Link]",`${req.protocol}://${req.headers.host}/user/forget-password/${resetPasswordToken}`)
+        message : forgetPasswordEmailTemplete.replace("[User Name]",user.username).replace("[Reset Password Link]",`${req.protocol}://${req.headers.host}/user/reset-password/${resetPasswordToken}`)
          })
     if(!isEmailSent){
         return res.status(500).json({message:"error occurs in sending verification email"})
