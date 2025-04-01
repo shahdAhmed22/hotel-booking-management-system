@@ -120,3 +120,18 @@ export const getProfile=async(req,res,next)=>{
     const user=req.auth
     return res.status(200).json({message:"profile fetched successfully",user})
 }
+
+export const refreshToken=async(req,res,next)=>{
+    let {refreshToken}=req.body
+    const decodedData=jwt.decode(refreshToken,process.env.refresh_token_signature)
+
+    const user=await User.findById(decodedData.id)
+    if(!user){
+        return res.status(404).json({meassage:"user not found"})
+    }
+    const accessToken=jwt.sign({id:user._id},process.env.access_token_signature,{expiresIn:"1d"})
+    refreshToken=jwt.sign({id:user._id},process.env.refresh_token_signature,{expiresIn:"7d"})
+
+    return res.status(200).json({message:"token refresh sucessfully",accessToken,refreshToken})
+
+}

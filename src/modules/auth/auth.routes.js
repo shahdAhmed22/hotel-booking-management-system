@@ -9,5 +9,6 @@ router.post("/login",authController.login)
 router.post("/forget-password",authController.forgetpassword)
 router.put("/reset-password/:token",authController.resetpassword)
 router.get("/profile",auth(),authController.getProfile)
+router.get("/refresh-token",authController.refreshToken)
 
 export default router
