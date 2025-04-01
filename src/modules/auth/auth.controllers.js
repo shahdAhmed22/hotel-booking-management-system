@@ -115,3 +115,8 @@ export const resetpassword=async(req,res,next)=>{
     await user.save()
     return res.status(200).json({message:"password changed successfully"})
 }
+
+export const getProfile=async(req,res,next)=>{
+    const user=req.auth
+    return res.status(200).json({message:"profile fetched successfully",user})
+}

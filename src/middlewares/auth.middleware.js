@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken"
 import User from "../../DB/models/user.model.js";
-import { systemRoles } from "../utils/system-roles";
+import { systemRoles } from "../utils/system-roles.js";
 export const auth=(authRoles=Object.values(systemRoles))=>{
     return async (req,res,next)=>{
         try{
@@ -12,7 +12,7 @@ export const auth=(authRoles=Object.values(systemRoles))=>{
             if(!decodedData||!decodedData.id){
                 return res.status(400).json({message:"invalied token payload"})
             }
-            const user=await User.findById(id)
+            const user=await User.findById(decodedData.id).select("-password")
             if(!user){
                 return res.status(404).json({message:"user not found"})
             }

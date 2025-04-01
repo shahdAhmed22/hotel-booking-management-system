@@ -5,7 +5,7 @@ import userRouter from "./src/modules/auth/auth.routes.js"
 
 config()//this function is enable us to use env variables that are in env file
 const app =express()
-const port = 3000
+const port = process.env.PORT ||3000
 app.use(express.json())
 
 app.use("/user",userRouter)
