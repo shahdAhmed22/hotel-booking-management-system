@@ -85,7 +85,7 @@ export const forgetpassword=async(req,res,next)=>{
     const resetPasswordToken=nanoid(8)//create random string with 8 characters
     user.resetPasswordToken=resetPasswordToken //this is for save reset password token
     user.resetPasswordExpiresIn=Date.now()+(10*60*1000)//each second = 1000
-    
+
     await user.save()//save changes in db that we make local in user variable
     const isEmailSent=await sendmailservice({ 
         to : email, 
@@ -96,4 +96,22 @@ export const forgetpassword=async(req,res,next)=>{
         return res.status(500).json({message:"error occurs in sending verification email"})
     }
     return res.status(200).json({message:"resetpassword link has been sent successfully"})
+}
+
+
+export const resetpassword=async(req,res,next)=>{
+    const {token}=req.params
+    const {newPassword}=req.body
+    if(!token){
+        return res.status(400).json({message:"please provide token"})
+    }
+    const user = await User.findOne({resetPasswordToken:token,resetPasswordExpiresIn:{$gt:Date.now()}})
+    if(!user)return res.status(404).json({message:"user not found"})
+    const hashedPassword=bcrypt.hashSync(newPassword,10)
+
+    user.password=hashedPassword
+    user.resetPasswordToken=null
+    user.resetPasswordExpiresIn=null
+    await user.save()
+    return res.status(200).json({message:"password changed successfully"})
 }
