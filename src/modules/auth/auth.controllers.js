@@ -33,3 +33,21 @@ export const register=async(req,res)=>{
     delete user.password
     return res.status(201).json({message:"user created successfully",user})
 } 
+//this function is for verify email that has just been registered
+//verify token
+//take token
+//decode token and get email from it 
+//find row in database with this email and isVerified:false
+//change isVerified:true
+export const verifiyEmail=async(req,res,next)=>{
+    const {token} = req.params
+    if(!token){
+        return res.status(404).json({meassage:"please provide verification token"})
+    }
+    const decodedData=await jwt.decode(token,process.env.Verification_signature)
+    const user=await User.findOneAndUpdate({email:decodedData.email,isVerified:false},{isVerified:true},{new:true})
+    if(!user){
+        return res.status(404).json({message:"user not found or has been already verified"})
+    }
+    res.status(200).json({meassage:"user verified successfully"})
+}
