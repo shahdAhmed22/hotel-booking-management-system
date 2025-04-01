@@ -32,6 +32,8 @@ const userSchema=new mongoose.Schema({
         required:false
     },
     address:String,
+    resetPasswordToken:String,
+    resetPasswordExpiresIn:Date
 },{timestamps:true})//createdAt , updatedAt
 //create collection(table) of user using its schema
 const user =mongoose.models.User||mongoose.model("User",userSchema)

@@ -1,15 +1,16 @@
+import User from "../../../DB/models/user.model.js"
+import jwt from "jsonwebtoken"//this is jsonweb token library which we will use for create verifcation token and access token
+import { forgetPasswordEmailTemplete, verificationEmailTemplete } from "../../utils/email-templetes.js"
+import bcrypt from "bcryptjs"
+import sendmailservice from "../../Services/send-email.js"
+import { nanoid } from "nanoid"
+
 //register
 //check if email exist ✔
 //create verification token
 //send verification token via email
 //hassing the password
 //usersave(email,password,username)
-
-import User from "../../../DB/models/user.model.js"
-import jwt from "jsonwebtoken"//this is jsonweb token library which we will use for create verifcation token and access token
-import { verificationEmailTemplete } from "../../utils/email-templetes.js"
-import bcrypt from "bcryptjs"
-import sendmailservice from "../../Services/send-email.js"
 
 export const register=async(req,res)=>{
     
@@ -66,4 +67,33 @@ export const login=async(req,res,next)=>{
     const accessToken=jwt.sign({id:user._id},process.env.access_token_signature,{expiresIn:"1d"})
     const refreshToken=jwt.sign({id:user._id},process.env.refresh_token_signature,{expiresIn:"7d"})
     return res.status(200).json({message:"user logined sucessfully",accessToken,refreshToken})
+}
+
+//forget pasword 
+//first: send email with reset password link
+    //reset password String: random string,reset password expirein: 10min
+    //send forgetpassword email
+//second: reset password
+
+export const forgetpassword=async(req,res,next)=>{
+    const {email}=req.body
+    if(!email)
+        return res.status(404).json({message:"please provide email for forget password"})
+    const user =await User.findOne({email})
+    if(!user)
+        return res.status(404).json({message:"there isn't user with this email"})
+    const resetPasswordToken=nanoid(8)//create random string with 8 characters
+    user.resetPasswordToken=resetPasswordToken //this is for save reset password token
+    user.resetPasswordExpiresIn=Date.now()+(10*60*1000)//each second = 1000
+    
+    await user.save()//save changes in db that we make local in user variable
+    const isEmailSent=await sendmailservice({ 
+        to : email, 
+        subject : 'forget password request',
+        message : forgetPasswordEmailTemplete.replace("[User Name]",user.username).replace("[Reset Password Link]",`${req.protocol}://${req.headers.host}/user/forget-password/${resetPasswordToken}`)
+         })
+    if(!isEmailSent){
+        return res.status(500).json({message:"error occurs in sending verification email"})
+    }
+    return res.status(200).json({message:"resetpassword link has been sent successfully"})
 }
