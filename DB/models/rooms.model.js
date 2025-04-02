@@ -31,10 +31,17 @@ const roomSchema = new mongoose.Schema({
     enum: Object.values(RoomStates),
     default: "available",
   },
-  images: {
-    type: [String], // Array of image URLs
-    default: [],
-  },
+  images: [{
+    public_id:{
+      type:String,
+      required:true
+    },
+    secure_url:{
+      type:String,
+      required:true
+    }
+  }],
+  customID:String,
   description: {
     type: String,
   },

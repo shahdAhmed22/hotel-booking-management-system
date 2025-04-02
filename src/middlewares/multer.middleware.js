@@ -1,4 +1,6 @@
-export const multer = () => {
+import multer from "multer"
+
+export const multerHost = () => {
     // diskStorage
     const storage = multer.diskStorage({})
     const extensions=['jpg', 'jpeg', 'png', 'gif']
