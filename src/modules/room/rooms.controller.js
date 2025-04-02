@@ -43,3 +43,39 @@ export const addRoom=async(req,res,next)=>{
         return res.status(500).json({message:"internal server error",error:error.message})
     }
 }
+
+export const deleteRoom = async (req, res, next) => {
+    try {
+        const { roomId } = req.params; // Get room ID from request parameters
+
+        // Check if the room exists
+        const room = await Room.findById(roomId);
+        if (!room) {
+            return res.status(404).json({ message: "Room not found" });
+        }
+
+        // Extract folder name from customID
+        const folderPath = `hotel/rooms/${room.customID}`;
+
+        // Delete images from Cloudinary
+        for (const image of room.images) {
+            await cloudinaryConfig().uploader.destroy(image.public_id);
+        }
+
+        // Delete the folder from Cloudinary
+        await cloudinaryConfig().api.delete_folder(folderPath);
+
+        // Delete room from database
+        await Room.findByIdAndDelete(roomId);
+
+        return res.status(200).json({ message: "Room deleted successfully" });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Internal Server Error", error: error.message });
+    }
+};
+    
+export const getRooms=async(req,res,next)=>{
+    const rooms=await Room.find()
+    res.status(200).json({message:"rooms fetched successfully",rooms})
+}

@@ -7,5 +7,7 @@ import { multerHost } from "../../middlewares/multer.middleware.js";
 
 const  router=Router()
 router.post("/add",auth([systemRoles.receptionist,systemRoles.manager]),multerHost().array('images',7),roomController.addRoom)
+router.delete("/delete/:roomId",auth([systemRoles.receptionist,systemRoles.manager]),roomController.deleteRoom)
+router.get("/",roomController.getRooms)
 
 export default router
