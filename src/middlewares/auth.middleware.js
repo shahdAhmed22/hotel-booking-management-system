@@ -6,7 +6,7 @@ export const auth=(authRoles=Object.values(systemRoles))=>{
         try{
             const accessToken=req.headers.token;
             if(!accessToken){
-                return res.status(404).json("please login first")
+                return res.status(404).json({message:"please login first"})
             }
             const decodedData=jwt.decode(accessToken,process.env.access_token_signature)
             if(!decodedData||!decodedData.id){

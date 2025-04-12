@@ -7,7 +7,7 @@ import { globalResponse } from "./src/middlewares/generalResponce.middleware.js"
 config()//this function is enable us to use env variables that are in env file
 const app =express()
 const port = process.env.PORT ||3000
-app.use(express.json())
+app.use(express.json())//to parse req.body
 
 app.use("/user",userRouter)
 app.use("/room",roomRouter)
