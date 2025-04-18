@@ -31,6 +31,10 @@ const userSchema=new mongoose.Schema({
         type:String,
         required:false
     },
+    Image:{
+        public_id:String,
+        secure_url:String
+    },
     address:String,
     resetPasswordToken:String,
     resetPasswordExpiresIn:Date

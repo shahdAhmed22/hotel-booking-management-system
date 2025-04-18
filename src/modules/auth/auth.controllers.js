@@ -4,6 +4,7 @@ import { forgetPasswordEmailTemplete, verificationEmailTemplete } from "../../ut
 import bcrypt from "bcryptjs"
 import sendmailservice from "../../Services/send-email.js"
 import { nanoid } from "nanoid"
+import { cloudinaryConfig } from "../../utils/cloudinary.util.js"
 
 //register
 //check if email exist ✔
@@ -64,7 +65,7 @@ export const login=async(req,res,next)=>{
     const isPasswordMatch=bcrypt.compareSync(password,user.password)
     if(!isPasswordMatch)
         return res.status(404).json({message:"invalid credientials"})
-    const accessToken=jwt.sign({id:user._id},process.env.access_token_signature,{expiresIn:"1d"})
+    const accessToken=jwt.sign({id:user._id},process.env.access_token_signature,{expiresIn:"7d"})
     const refreshToken=jwt.sign({id:user._id},process.env.refresh_token_signature,{expiresIn:"7d"})
     return res.status(200).json({message:"user logined sucessfully",accessToken,refreshToken})
 }
@@ -134,4 +135,20 @@ export const refreshToken=async(req,res,next)=>{
 
     return res.status(200).json({message:"token refresh sucessfully",accessToken,refreshToken})
 
+}
+
+export const uploadProfileImg=async(req,res,next)=>{
+    const user=req.auth;
+    if(!req.file){
+        res.status(404).json({message:"you should provide image"})
+    }
+    const folderPath=`hotel/user`
+    const {public_id,secure_url}=await cloudinaryConfig().uploader.upload(req.file.path,
+            {
+                folder:folderPath,
+                resource_type:"auto"
+            })
+    user.Image={public_id,secure_url}
+    await user.save()
+    res.status(200).json({message:"profile image uploaded successfully",user})
 }
