@@ -165,3 +165,16 @@ export const updateRoomStatus=async(req,res,next)=>{
     return res.status(200).json({ message: "Room updated successfully", room: updatedRoom });
 
 }
+
+export const getSpecificRooms=async(req,res,next)=>{
+    const {id}=req.params
+    const room = await Room.findById(id);
+    
+    return res.status(200).json({ message: "Room fetched successfully", room})
+}
+//find find all elements that meet condition find({status:"available"})//find all available rooms
+//findOne find first element that meet condition 
+//findbyId like find one but with id (id)
+
+//update element 
+//find one and update
